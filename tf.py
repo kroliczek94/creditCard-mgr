@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import sklearn.metrics as sk
 
 # VARIABLES
 FILE_NAME = 'creditcard.csv'
@@ -141,10 +142,17 @@ optimizer = tf.train.AdamOptimizer(0.005).minimize(cross_entropy)
 def calculate_accuracy(actual, predicted):
     actual = np.argmax(actual, 1)
     predicted = np.argmax(predicted, 1)
+    return 100  * sk.f1_score(actual, predicted)
+    print(actual, predicted)
     return (100 * np.sum(np.equal(predicted, actual)) / predicted.shape[0])
 
+#def calculate_accuracy(actual, predicted):
+ #   print("pred",predicted, "act" ,actual)
+  #  return tf.metrics.accuracy(actual, predicted)
+   # #return 100* sk.f1_score(actual, predicted)
 
-num_epochs = 100
+
+num_epochs = 250
 
 import time
 
@@ -167,12 +175,12 @@ with tf.Session() as session:
         final_accuracy = calculate_accuracy(final_y_test, final_y_test_prediction)
         print("Current accuracy: {0:.2f}%".format(final_accuracy))
 
-final_y_test = y_test_node.eval()
-final_y_test_prediction = y_test_prediction.eval()
-final_accuracy = calculate_accuracy(final_y_test, final_y_test_prediction)
-print("Final accuracy: {0:.2f}%".format(final_accuracy))
+    final_y_test = y_test_node.eval()
+    final_y_test_prediction = y_test_prediction.eval()
+    final_accuracy = calculate_accuracy(final_y_test, final_y_test_prediction)
+    print("Final accuracy: {0:.2f}%".format(final_accuracy))
 
-final_fraud_y_test = final_y_test[final_y_test[:, 1] == 1]
-final_fraud_y_test_prediction = final_y_test_prediction[final_y_test[:, 1] == 1]
-final_fraud_accuracy = calculate_accuracy(final_fraud_y_test, final_fraud_y_test_prediction)
-print('Final fraud specific accuracy: {0:.2f}%'.format(final_fraud_accuracy))
+    final_fraud_y_test = final_y_test[final_y_test[:, 1] == 1]
+    final_fraud_y_test_prediction = final_y_test_prediction[final_y_test[:, 1] == 1]
+    final_fraud_accuracy = calculate_accuracy(final_fraud_y_test, final_fraud_y_test_prediction)
+    print('Final fraud specific accuracy: {0:.2f}%'.format(final_fraud_accuracy))
